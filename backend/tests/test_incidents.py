@@ -59,3 +59,4 @@ def test_update_nonexistent_incident(client):
     res = client.patch("/api/incidents/CIV-NOTFOUND", json=update_payload)
     assert res.status_code == 404
     assert "not found" in res.json()["detail"].lower()
+

@@ -105,3 +105,4 @@ def test_link_nonexistent_report_to_incident(client):
     res = client.patch("/api/reports/SUB-NONEXISTENT/link", json=link_payload)
     assert res.status_code == 404
     assert "not found" in res.json()["detail"].lower()
+

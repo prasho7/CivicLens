@@ -27,3 +27,4 @@ if (typeof window !== 'undefined' && window.URL && !window.URL.createObjectURL) 
   window.URL.createObjectURL = () => 'blob:mock-image-preview';
   window.URL.revokeObjectURL = () => {};
 }
+

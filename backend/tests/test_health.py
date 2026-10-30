@@ -33,3 +33,4 @@ def test_health_endpoint_unconfigured(client):
         assert data["status"] == "ok"
         assert data["database"]["configured"] is False
         assert data["database"]["status"] == "not_configured"
+
