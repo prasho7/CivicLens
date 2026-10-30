@@ -103,4 +103,278 @@ CivicLens separates the intelligence layer from the application workflow.
 
 ### Current Engine: Rule-Based Intake
 
-The current configured engine is a **rule-based heuristic fall**
+The current configured engine is a **rule-based heuristic fallback**, not a live generative AI model.
+
+It evaluates available report information to support:
+
+* Category suggestions.
+* Priority assessment.
+* Evidence extraction.
+* Report summaries.
+* Potential duplicate screening.
+
+This approach provides a predictable baseline and allows the application to operate without requiring an external AI API key.
+
+### Optional LLM Integration
+
+The backend includes an optional Gemini integration path controlled by environment configuration.
+
+When correctly configured and tested, an LLM can provide more flexible interpretation of natural-language reports.
+
+**Important:** Real Gemini inference is not the active engine unless a valid API key is configured and the integration is successfully exercised.
+
+### Why This Approach?
+
+* **Graceful degradation:** Core intake can remain available when external AI services are unavailable.
+* **Separation of concerns:** Intelligence processing runs through the backend rather than exposing credentials in the browser.
+* **Human oversight:** Duplicate suggestions do not automatically merge records.
+* **Evidence awareness:** Analysis should remain grounded in submitted information.
+* **Incremental extensibility:** Additional models can be integrated without redesigning the entire application.
+
+CivicLens treats automated analysis as decision support, not as a substitute for municipal verification or judgment.
+
+---
+
+## 🏗️ System Architecture
+
+```text
+                 CITIZEN / MUNICIPAL OFFICER
+                            |
+                            v
+                 REACT + VITE FRONTEND
+                  /         |          \
+                 /          |           \
+          Report Form    Dashboard    Track Report
+                              |
+                    Incident Map & Insights
+                              |
+                              v
+                     FASTAPI BACKEND
+                              |
+              +---------------+---------------+
+              |               |               |
+              v               v               v
+        Report API      Incident API    Analysis Engine
+              |               |          /          \
+              |               |      Rules       Optional
+              |               |      Engine      Gemini
+              |               |                   (if
+              |               |               configured)
+              +---------------+---------------+
+                              |
+                              v
+                     SUPABASE POSTGRESQL
+                              |
+              +---------------+---------------+
+              |               |               |
+              v               v               v
+         Citizen Reports   Incidents     Analysis Data
+                              |
+                              v
+                    Assignment & Audit
+                         Information
+```
+
+### Technology Stack
+
+| Layer           | Technology                         | Purpose                                             |
+| --------------- | ---------------------------------- | --------------------------------------------------- |
+| Frontend        | React, Vite, JavaScript            | User interface and application workflows            |
+| Backend         | Python, FastAPI                    | APIs, validation, analysis, and incident operations |
+| Database        | Supabase PostgreSQL                | Persistent reports, incidents, and related data     |
+| Mapping         | React Leaflet                      | Interactive map components                          |
+| Map Data        | OpenStreetMap                      | Geographic map tiles                                |
+| Intelligence    | Rule-based engine; optional Gemini | Report analysis and prioritization                  |
+| Version Control | Git, GitHub                        | Source code and project collaboration               |
+
+---
+
+## 🔄 Example End-to-End Workflow
+
+Imagine a citizen reports waterlogging near a busy road.
+
+**Step 1: Submit**
+
+The citizen describes the issue and provides available location details. CivicLens creates a report with a reference ID.
+
+**Step 2: Analyze**
+
+The intake engine suggests a category, produces a summary, assesses priority, and checks for potential matching incidents.
+
+**Step 3: Review**
+
+The report appears in the intake workflow. A municipal officer reviews its details and any suggested matches.
+
+**Step 4: Link and Assign**
+
+If an existing incident is appropriate, the officer links the report to it. Otherwise, the report can remain in the intake queue until the appropriate action is taken. The incident can be assigned to a responsible team.
+
+**Step 5: Track**
+
+The officer updates the incident as work progresses. The citizen can use the report reference ID to view the report's current state and linked incident status, when applicable.
+
+**Result:** A structured, traceable workflow connecting citizen input to municipal action.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Install the following:
+
+* Node.js and npm
+* Python 3.12 or a compatible Python version
+* A Supabase project
+* Git
+
+### 1. Clone the Repository
+
+```bash
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd civiclens
+```
+
+Replace the repository placeholder with your actual GitHub repository URL.
+
+### 2. Set Up the Frontend
+
+From the project root:
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local URL printed by Vite, commonly `http://localhost:5173`.
+
+### 3. Set Up the Backend
+
+Open a separate terminal from the project root.
+
+```bash
+cd backend
+python -m venv .venv
+```
+
+Activate the virtual environment.
+
+**Windows:**
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks activation, use the equivalent activation command for your terminal.
+
+Install the backend dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the FastAPI server:
+
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+This command assumes the application entry point is `backend/app/main.py`. If your actual entry point differs, use the corresponding module path.
+
+Open `http://127.0.0.1:8000/docs` to inspect the API when the backend is running.
+
+### 4. Configure Supabase
+
+1. Create a Supabase project.
+2. Open the project's SQL Editor.
+3. Inspect and apply the SQL setup in `backend/schema.sql`, following the project's existing migration requirements.
+4. Configure the database connection settings expected by the backend.
+5. Start the backend and verify database connectivity.
+
+Use the environment variable names expected by the actual backend implementation. Do not commit credentials to GitHub.
+
+### 5. Optional Gemini Configuration
+
+To enable the optional Gemini integration, obtain an API key and configure it in the backend environment if supported by the current implementation.
+
+For example, if the backend expects this variable:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+Keep the key in the backend environment, never in frontend source code. Restart the backend after changing environment variables and verify that requests actually use Gemini.
+
+### 6. Run the Application
+
+Run the frontend and backend in separate terminals.
+
+Verify that:
+
+* The frontend can reach the backend.
+* The backend can reach Supabase.
+* Citizen reports can be submitted and retrieved.
+* Officer changes persist after refreshing.
+* Report tracking displays the correct linkage and status.
+* The map and intelligence summaries use the available data.
+
+---
+
+## 🔐 Security and Data Integrity
+
+* Keep database credentials and API keys out of frontend code.
+* Configure CORS for the intended frontend origin.
+* Apply appropriate database access policies and least-privilege permissions.
+* Validate incoming API requests.
+* Do not expose privileged database credentials to the browser.
+* Preserve the distinction between citizen reports and municipal incidents.
+* Do not represent automated priority assessments as official verification.
+* Do not automatically merge potential duplicate reports.
+
+Deployment requires reviewing Supabase Row Level Security policies, backend authorization, and production environment configuration. A working local demo does not by itself establish production readiness.
+
+---
+
+## 🧪 Testing and Verification
+
+The development workflow has reported successful checks for:
+
+* Python backend syntax compilation.
+* Frontend linting.
+* Vite production builds.
+* Report analysis and priority assessment.
+* Potential duplicate candidate screening.
+* Supabase report persistence.
+* Incident assignment and status updates.
+* Report-to-incident linkage.
+* Citizen tracking and dashboard behavior.
+
+These are development-reported results. Re-run the checks against the current repository before a release, and independently verify the live workflow before claiming production readiness.
+
+---
+
+## 🔮 Future Scope
+
+* Configurable real-time AI analysis and model evaluation.
+* More robust duplicate detection across descriptions, locations, and time.
+* Role-based authentication for citizens and municipal officers.
+* Image analysis for relevant civic evidence.
+* Notifications when incident statuses change.
+* Response-time and resolution analytics.
+* Department-level performance insights.
+* Multilingual reporting for broader accessibility.
+* Production deployment, monitoring, and security hardening.
+
+---
+
+## 🌟 Vision
+
+CivicLens aims to make civic issue management more transparent, structured, and actionable.
+
+The long-term vision is not simply to collect more complaints. It is to help communities and municipal teams understand recurring problems, prioritize attention, coordinate responses, and make progress visible.
+
+**Better reporting. Clearer priorities. More accountable action.**
+
+---
+
+### Built for CivicTech | AI-Assisted Decision Support | Full-Stack Development
