@@ -1,0 +1,2 @@
+"""CivicLens FastAPI Backend Application."""
+

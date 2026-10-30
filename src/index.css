@@ -1,0 +1,158 @@
+/* CivicLens — Modern Civic Intelligence Design System */
+
+:root {
+  /* Navy Brand & Navigation Anchors */
+  --navy-950: #080d19;
+  --navy-900: #0d1527;
+  --navy-850: #111a30;
+  --navy-800: #16223b;
+  --navy-700: #1e2f4e;
+  --navy-border: rgba(255, 255, 255, 0.08);
+  --navy-border-hover: rgba(255, 255, 255, 0.15);
+
+  /* Workspace & Surfaces */
+  --surface-ground: #f8fafc;
+  --surface-card: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --surface-hover: #f8fafc;
+
+  /* Primary Accent: Civic Teal */
+  --teal-50: #f0fdfa;
+  --teal-100: #ccfbf1;
+  --teal-200: #99f6e4;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --teal-600: #0d9488;
+  --teal-700: #0f766e;
+  --teal-800: #115e59;
+  --teal-900: #134e4a;
+
+  /* Neutral Slate */
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-300: #cbd5e1;
+  --slate-200: #e2e8f0;
+  --slate-100: #f1f5f9;
+  --slate-50: #f8fafc;
+
+  /* Priorities & Alerts (Restrained) */
+  --critical-text: #991b1b;
+  --critical-bg: #fef2f2;
+  --critical-border: #fecaca;
+  --critical-dot: #ef4444;
+
+  --high-text: #92400e;
+  --high-bg: #fffbeb;
+  --high-border: #fde68a;
+  --high-dot: #f59e0b;
+
+  --medium-text: #334155;
+  --medium-bg: #f1f5f9;
+  --medium-border: #e2e8f0;
+  --medium-dot: #64748b;
+
+  /* Status Colors */
+  --status-open-text: #0f766e;
+  --status-open-bg: #f0fdfa;
+  --status-open-border: #99f6e4;
+  --status-open-dot: #0d9488;
+
+  --status-review-text: #475569;
+  --status-review-bg: #f8fafc;
+  --status-review-border: #e2e8f0;
+  --status-review-dot: #6366f1;
+
+  --status-resolved-text: #166534;
+  --status-resolved-bg: #f0fdf4;
+  --status-resolved-border: #bbf7d0;
+  --status-resolved-dot: #22c55e;
+
+  /* Category Themes */
+  --cat-roads-bg: #f0fdfa;
+  --cat-roads-border: #ccfbf1;
+  --cat-roads-text: #0f766e;
+
+  --cat-waste-bg: #f0fdf4;
+  --cat-waste-border: #dcfce7;
+  --cat-waste-text: #166534;
+
+  --cat-lighting-bg: #fefce8;
+  --cat-lighting-border: #fef08a;
+  --cat-lighting-text: #854d0e;
+
+  --cat-water-bg: #f0f9ff;
+  --cat-water-border: #bae6fd;
+  --cat-water-text: #0284c7;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 12px 24px -4px rgba(15, 23, 42, 0.08);
+  --shadow-selected: 0 0 0 1.5px var(--teal-600), 0 6px 18px -3px rgba(13, 148, 136, 0.16);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-pill: 9999px;
+
+  /* Fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background-color: var(--surface-ground);
+  color: var(--slate-900);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--surface-ground);
+  color: var(--slate-900);
+  line-height: 1.5;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--teal-500);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

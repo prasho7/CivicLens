@@ -1,0 +1,12 @@
+# Ignore local environment files and secrets
+.env
+.env*.local
+*.env
+!.env.example
+
+# Python cache & virtual environment
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
