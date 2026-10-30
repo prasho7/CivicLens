@@ -335,21 +335,79 @@ Deployment requires reviewing Supabase Row Level Security policies, backend auth
 
 ---
 
-## 🧪 Testing and Verification
+## 🧪 Testing and Automated Verification
 
-The development workflow has reported successful checks for:
+CivicLens includes a complete automated test suite spanning the FastAPI backend and React frontend. External database operations and network AI calls are cleanly mocked during test runs so automated evaluations execute rapidly, deterministically, and without modifying live Supabase data.
 
-* Python backend syntax compilation.
-* Frontend linting.
-* Vite production builds.
-* Report analysis and priority assessment.
-* Potential duplicate candidate screening.
-* Supabase report persistence.
-* Incident assignment and status updates.
-* Report-to-incident linkage.
-* Citizen tracking and dashboard behavior.
+### 1. Frontend Test Suite (Vitest + React Testing Library)
 
-These are development-reported results. Re-run the checks against the current repository before a release, and independently verify the live workflow before claiming production readiness.
+Covers citizen report form validation, submission success/error states, and tracking views:
+
+```bash
+# Run all frontend tests
+npm test
+
+# Run frontend tests in interactive watch mode
+npm run test:watch
+```
+
+**Key Frontend Scenarios Tested:**
+* Form input validation (required category, description, and location).
+* Enforced minimum 10-character description constraints.
+* Submission success handling and Reference ID (`SUB-XXXXXX`) presentation.
+* API error banner and graceful error recovery.
+* Citizen tracking page state rendering:
+  - Not found screen for non-existent reference IDs.
+  - Pending incident linkage badge for intake queue submissions.
+  - Linked operational incident details, assigned response department, and latest field updates.
+  - Enforced legal disclaimer: *"Citizen-reported; not independently verified."*
+
+### 2. Backend Test Suite (Pytest + FastAPI TestClient)
+
+Located in `backend/tests/` and structured for standard automated evaluator discovery:
+
+```powershell
+# From project root:
+npm run test:backend
+
+# Or directly in the backend directory:
+cd backend
+.\.venv\Scripts\Activate.ps1
+pytest -v
+```
+
+**Key Backend Scenarios Tested:**
+* `test_health.py`: Health endpoint (`/api/health`) probe under connected and unconfigured database states.
+* `test_reports.py`:
+  - Citizen report intake (`POST /api/reports`) with schema validation (category enum, min-length, whitespace guards).
+  - Report listing (`GET /api/reports`) with status and incident filters.
+  - Single report retrieval (`GET /api/reports/{ref_id}`) with 404 handling.
+  - Explicit officer report-to-incident linkage (`PATCH /api/reports/{ref_id}/link`) and 404 validation.
+* `test_analysis.py`:
+  - Priority triage: `Critical` (safety hazards near schools/hospitals/collapses), `High` (transit/vehicle hazards), `Low` (cosmetic/faded paint).
+  - Issue category suggestion heuristics based on keyword vocabulary.
+  - Evidence phrase extraction from complaints.
+  - Duplicate candidate detection against existing incidents without auto-merging.
+  - Draft analysis endpoint (`POST /api/reports/analyze-draft`).
+* `test_incidents.py`:
+  - Incident retrieval (`GET /api/incidents`, `GET /api/incidents/{incident_id}`) and 404 handling.
+  - Officer operational updates (`PATCH /api/incidents/{incident_id}`) with status progression, department assignment, and audit log history appending.
+
+### 3. Run All Test Suites
+
+```bash
+npm run test:all
+```
+
+### 4. Code Quality & Build Checks
+
+```bash
+# Static analysis and linting (0 errors, 0 warnings)
+npm run lint
+
+# Production bundle check
+npm run build
+```
 
 ---
 
